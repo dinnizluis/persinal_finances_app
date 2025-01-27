@@ -1,7 +1,7 @@
 from datetime import datetime
 from database.db_connection import get_db_connection
 
-def add_expense(name, amount, category, due_date, status=False):
+def add_expense(name, amount, category, due_date, status=False, db_connection=None):
     """
     Adds a new expense to the database.
 
@@ -11,20 +11,23 @@ def add_expense(name, amount, category, due_date, status=False):
     :param due_date: The due date of the expense in 'YYYY-MM-DD' format (optional).
     :return: None
     """
-    # Use the current date if no date is provided
-    if due_date is None:
-        due_date = datetime.now().strftime('%Y-%m-%d')
-
-    # Validate the amount
+    if not name:
+        raise ValueError("Expense name is required.")
     if amount <= 0:
         raise ValueError("Amount must be greater than zero.")
-
-    # Validate the category
     if not category:
-        raise ValueError("Category cannot be empty.")
+        raise ValueError("Category is required.")
+    if not due_date:
+        raise ValueError("Due date is required.")
+    # Validate due_date format (YYYY-MM-DD)
+    try:
+        datetime.strptime(due_date, "%Y-%m-%d")
+    except ValueError:
+        raise ValueError("Invalid date format. Expected YYYY-MM-DD.")
 
     # Establish a database connection
-    with get_db_connection() as conn:
+    conn = db_connection or get_db_connection()
+    with conn:
         cursor = conn.cursor()
         try:
             # Insert the expense into the table
@@ -33,6 +36,7 @@ def add_expense(name, amount, category, due_date, status=False):
                 VALUES (?, ?, ?, ?, ?)
             ''', (name, amount, category, status, due_date))
             conn.commit()
+            print()
         except Exception as e:
             conn.rollback()
             raise e
