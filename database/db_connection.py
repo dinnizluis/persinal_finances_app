@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from const import get_database_name
 import sqlite3
 
 @contextmanager
@@ -8,7 +9,7 @@ def get_db_connection():
 
     :yield: sqlite3.Connection object
     """
-    conn = sqlite3.connect('finance.db')
+    conn = sqlite3.connect(get_database_name())
     conn.row_factory = sqlite3.Row
     try:
         yield conn

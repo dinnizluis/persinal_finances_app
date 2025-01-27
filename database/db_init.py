@@ -1,8 +1,9 @@
 import sqlite3
+from const import get_database_name
 
 def initialize_database():
     # Connect to SQLite (creates the file if it doesn't exist)
-    connection = sqlite3.connect("personal_finance_app.db")
+    connection = sqlite3.connect(get_database_name())
     cursor = connection.cursor()
 
     # Create 'expenses' table
@@ -10,9 +11,9 @@ def initialize_database():
     CREATE TABLE IF NOT EXISTS expenses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        value REAL NOT NULL,
+        amount REAL NOT NULL,
         category TEXT NOT NULL,
-        status BOOLEAN NOT NULL DEFAULT 0,
+        paid_status BOOLEAN NOT NULL DEFAULT 0,
         due_date DATE NOT NULL
     );
     """)

@@ -1,4 +1,3 @@
-import sqlite3
 from datetime import datetime
 from logic.expenses import add_expense  # Adjust the import based on your project structure
 from database.db_init import initialize_database
@@ -16,13 +15,13 @@ def main():
         choice = input("Choose an option: ")
 
         if choice == '1':
+            expense_name = input("Enter a name for the expense: ")
             amount = float(input("Enter the expense amount: "))
             category = input("Enter the expense category: ")
-            description = input("Enter a description for the expense: ")
             date = input("Enter the date of the expense (YYYY-MM-DD): ")
 
             # Call the add_expense function
-            add_expense(amount, category, description, date)
+            add_expense(expense_name, amount, category, date)
             print(f"Expense of {amount} in category '{category}' added successfully.")
         elif choice == '2':
             print("Exiting the application.")
