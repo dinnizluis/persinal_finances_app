@@ -9,7 +9,8 @@ def get_db_connection():
 
     :yield: sqlite3.Connection object
     """
-    conn = sqlite3.connect(get_database_name())
+    database_name = get_database_name()
+    conn = sqlite3.connect(database_name)
     conn.row_factory = sqlite3.Row
     try:
         yield conn

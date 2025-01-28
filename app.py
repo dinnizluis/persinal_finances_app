@@ -15,10 +15,14 @@ def main():
         choice = input("Choose an option: ")
 
         if choice == '1':
-            expense_name = input("Enter a name for the expense: ")
-            amount = float(input("Enter the expense amount: "))
-            category = input("Enter the expense category: ")
-            date = input("Enter the date of the expense (YYYY-MM-DD): ")
+            #expense_name = input("Enter a name for the expense: ")
+            expense_name = "Gym2"
+            #amount = float(input("Enter the expense amount: "))
+            amount = 100
+            #category = input("Enter the expense category: ")
+            category = "Health"
+            #date = input("Enter the date of the expense (YYYY-MM-DD): ")
+            date = "2025-01-01"
 
             # Call the add_expense function
             add_expense(expense_name, amount, category, date)

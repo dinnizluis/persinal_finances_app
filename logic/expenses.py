@@ -1,7 +1,7 @@
 from datetime import datetime
 from database.db_connection import get_db_connection
 
-def add_expense(name, amount, category, due_date, status=False, db_connection=None):
+def add_expense(name, amount, category, due_date, status=False):
     """
     Adds a new expense to the database.
 
@@ -26,8 +26,7 @@ def add_expense(name, amount, category, due_date, status=False, db_connection=No
         raise ValueError("Invalid date format. Expected YYYY-MM-DD.")
 
     # Establish a database connection
-    conn = db_connection or get_db_connection()
-    with conn:
+    with get_db_connection() as conn:
         cursor = conn.cursor()
         try:
             # Insert the expense into the table

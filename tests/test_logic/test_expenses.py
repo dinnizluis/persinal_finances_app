@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 import sqlite3
 from logic.expenses import add_expense
 
@@ -23,40 +24,51 @@ class TestAddExpense(unittest.TestCase):
         # Close the database connection after each test
         self.conn.close()
 
-    def test_add_valid_expense(self):
+    @patch('logic.expenses.get_db_connection')
+    def test_add_valid_expense(self, mock_get_db_connection):
+        # Mock the database connection to use the in-memory database
+        mock_get_db_connection.return_value = self.conn
+
         # Test adding a valid expense
-        add_expense('Groceries', 150.00, 'Food', '2025-02-01', db_connection=self.conn)
+        add_expense('Groceries', 150.00, 'Food', '2025-02-01')
+
+        # Verify the expense was added to the database
         self.cursor.execute("SELECT * FROM expenses")
         expenses = self.cursor.fetchall()
         self.assertEqual(len(expenses), 1)
         self.assertEqual(expenses[0][1], 'Groceries')
         self.assertEqual(expenses[0][2], 150.00)
         self.assertEqual(expenses[0][3], 'Food')
-        self.assertEqual(expenses[0][4], 0)  # Default status
+        self.assertEqual(expenses[0][4], 0)  # Default paid_status
         self.assertEqual(expenses[0][5], '2025-02-01')
 
-    def test_add_expense_negative_amount(self):
-        # Test adding an expense with a negative amount
+    @patch('logic.expenses.get_db_connection')
+    def test_add_expense_negative_amount(self, mock_get_db_connection):
+        mock_get_db_connection.return_value = self.conn
         with self.assertRaises(ValueError):
             add_expense('Refund', -50.00, 'Misc', '2025-02-01')
 
-    def test_add_expense_invalid_date(self):
-        # Test adding an expense with an invalid date format
+    @patch('logic.expenses.get_db_connection')
+    def test_add_expense_invalid_date(self, mock_get_db_connection):
+        mock_get_db_connection.return_value = self.conn
         with self.assertRaises(ValueError):
             add_expense('Subscription', 20.00, 'Entertainment', '01-02-2025')
 
-    def test_add_expense_missing_name(self):
-        # Test adding an expense without a name
+    @patch('logic.expenses.get_db_connection')
+    def test_add_expense_missing_name(self, mock_get_db_connection):
+        mock_get_db_connection.return_value = self.conn
         with self.assertRaises(ValueError):
             add_expense('', 100.00, 'Utilities', '2025-02-01')
 
-    def test_add_expense_missing_category(self):
-        # Test adding an expense without a category
+    @patch('logic.expenses.get_db_connection')
+    def test_add_expense_missing_category(self, mock_get_db_connection):
+        mock_get_db_connection.return_value = self.conn
         with self.assertRaises(ValueError):
             add_expense('Electricity Bill', 100.00, '', '2025-02-01')
 
-    def test_add_expense_missing_due_date(self):
-        # Test adding an expense without a due date
+    @patch('logic.expenses.get_db_connection')
+    def test_add_expense_missing_due_date(self, mock_get_db_connection):
+        mock_get_db_connection.return_value = self.conn
         with self.assertRaises(ValueError):
             add_expense('Water Bill', 50.00, 'Utilities', '')
 
