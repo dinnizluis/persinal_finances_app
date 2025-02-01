@@ -1,8 +1,8 @@
 from datetime import datetime
 from logic.expenses import add_expense  # Adjust the import based on your project structure
 from database.db_init import initialize_database
-
-def main():
+# Ignored on testing until final design is defined
+def main(): # pragma: no cover
     """
     Main function to run the application, allowing the user to add expenses.
     """
@@ -33,5 +33,5 @@ def main():
         else:
             print("Invalid choice. Please try again.")
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     main()

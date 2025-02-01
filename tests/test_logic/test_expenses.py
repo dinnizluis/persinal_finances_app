@@ -1,6 +1,10 @@
-import unittest
-from unittest.mock import patch
 import sqlite3
+import unittest
+from unittest import mock
+from unittest.mock import patch
+
+
+import pytest
 from logic.expenses import add_expense
 
 class TestAddExpense(unittest.TestCase):
@@ -71,6 +75,37 @@ class TestAddExpense(unittest.TestCase):
         mock_get_db_connection.return_value = self.conn
         with self.assertRaises(ValueError):
             add_expense('Water Bill', 50.00, 'Utilities', '')
+   
+    def test_add_expense_database_failure(self):
+        # Create a mock database connection and cursor
+        mock_conn = mock.MagicMock()
+        mock_cursor = mock.MagicMock()
+        
+        # Ensure that `__enter__()` is used correctly in a `with` statement
+        mock_conn.__enter__.return_value = mock_conn
+        mock_conn.cursor.return_value = mock_cursor
+        
+        # Simulate a database failure on execute
+        mock_cursor.execute.side_effect = Exception("Database Error")
 
-if __name__ == '__main__':
+        # Define expected parameters
+        name, amount, category, due_date = "Test Expense", 100.0, "Food", "2025-02-01"
+
+        # Call add_expense and expect an exception
+        with pytest.raises(Exception, match="Database Error"):
+            add_expense(name, amount, category, due_date, db_connection=mock_conn)
+
+        # Assert that execute was called with the correct query and parameters
+        expected_query = '''
+                INSERT INTO expenses (name, amount, category, paid_status, due_date)
+                VALUES (?, ?, ?, ?, ?)
+            '''
+        expected_params = (name, amount, category, False, due_date)
+
+        mock_cursor.execute.assert_called_once_with(expected_query, expected_params)
+
+        # Ensure rollback was called due to the exception
+        mock_conn.rollback.assert_called_once()
+
+if __name__ == '__main__': # pragma: no cover
     unittest.main()
