@@ -1,6 +1,9 @@
 import unittest
+from unittest import mock
 from unittest.mock import patch
 import sqlite3
+
+import pytest
 from logic.expenses import add_expense
 
 class TestAddExpense(unittest.TestCase):
@@ -71,34 +74,37 @@ class TestAddExpense(unittest.TestCase):
         mock_get_db_connection.return_value = self.conn
         with self.assertRaises(ValueError):
             add_expense('Water Bill', 50.00, 'Utilities', '')
-
-    @patch('logic.expenses.get_db_connection')
-    def test_add_expense_database_failure(self, mock_get_db_connection):
-        # Create a fully mocked database connection and cursor
-        mock_conn = unittest.mock.MagicMock()
-        mock_cursor = unittest.mock.MagicMock()
-
-        # Mock connection setup
+   
+    def test_add_expense_database_failure(self):
+        # Create a mock database connection and cursor
+        mock_conn = mock.MagicMock()
+        mock_cursor = mock.MagicMock()
+        
+        # Ensure that `__enter__()` is used correctly in a `with` statement
+        mock_conn.__enter__.return_value = mock_conn
         mock_conn.cursor.return_value = mock_cursor
-        mock_get_db_connection.return_value = mock_conn
+        
+        # Simulate a database failure on execute
+        mock_cursor.execute.side_effect = Exception("Database Error")
 
-        # Simulate an exception when `execute()` is called
-        mock_cursor.execute.side_effect = sqlite3.OperationalError("Database error")
+        # Define expected parameters
+        name, amount, category, due_date = "Test Expense", 100.0, "Food", "2025-02-01"
 
-        # Debugging prints
-        print("Mocked connection:", mock_get_db_connection.return_value)
-        print("Mocked cursor execute side effect:", mock_cursor.execute.side_effect)
+        # Call add_expense and expect an exception
+        with pytest.raises(Exception, match="Database Error"):
+            add_expense(name, amount, category, due_date, db_connection=mock_conn)
 
-        try:
-            add_expense('Lunch', 20.00, 'Food', '2025-02-01')
-        except Exception as e:
-            print(f"Exception caught: {e}")  # This should print "Database error"
+        # Assert that execute was called with the correct query and parameters
+        expected_query = '''
+                INSERT INTO expenses (name, amount, category, paid_status, due_date)
+                VALUES (?, ?, ?, ?, ?)
+            '''
+        expected_params = (name, amount, category, False, due_date)
 
-        # Verify that `execute()` was actually called
-        mock_cursor.execute.assert_called()
+        mock_cursor.execute.assert_called_once_with(expected_query, expected_params)
 
-        # Ensure rollback was triggered due to the exception
-        mock_conn.rollback.assert_called()
+        # Ensure rollback was called due to the exception
+        mock_conn.rollback.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()
