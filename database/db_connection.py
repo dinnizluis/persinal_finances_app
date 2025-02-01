@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+import logging
 from const import get_database_name
 import sqlite3
 
@@ -15,7 +16,8 @@ def get_db_connection():
     try:
         yield conn
     except sqlite3.Error as e:
+        logging.error(f"Error connecting to database: {e}")  
         print(f"Error connecting to database: {e}")
-        raise
+        raise e
     finally:
         conn.close()

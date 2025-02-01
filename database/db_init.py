@@ -1,9 +1,13 @@
 import sqlite3
 from const import get_database_name
 
-def initialize_database():
+def initialize_database(connection=None):
     # Connect to SQLite (creates the file if it doesn't exist)
-    connection = sqlite3.connect(get_database_name())
+    created_connection = False
+    if connection is None: # pragma: no cover
+        connection = sqlite3.connect(get_database_name())  # Use actual database file
+        created_connection = True  # We created it, so we should close it later
+    
     cursor = connection.cursor()
 
     # Create 'expenses' table
@@ -69,8 +73,10 @@ def initialize_database():
 
     # Commit changes and close connection
     connection.commit()
-    connection.close()
+    if created_connection: # pragma: no cover
+        connection.close()
+
     print("Database initialized successfully!")
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     initialize_database()

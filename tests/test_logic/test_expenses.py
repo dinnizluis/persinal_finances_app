@@ -1,7 +1,8 @@
+import sqlite3
 import unittest
 from unittest import mock
 from unittest.mock import patch
-import sqlite3
+
 
 import pytest
 from logic.expenses import add_expense
@@ -106,5 +107,5 @@ class TestAddExpense(unittest.TestCase):
         # Ensure rollback was called due to the exception
         mock_conn.rollback.assert_called_once()
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     unittest.main()
