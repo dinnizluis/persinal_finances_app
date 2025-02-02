@@ -1,37 +1,29 @@
-from datetime import datetime
-from logic.expenses import add_expense  # Adjust the import based on your project structure
-from database.db_init import initialize_database
-# Ignored on testing until final design is defined
-def main(): # pragma: no cover
-    """
-    Main function to run the application, allowing the user to add expenses.
-    """
-    initialize_database()
+import customtkinter
 
-    while True:
-        print("\nPersonal Finance App")
-        print("1. Add Expense")
-        print("2. Exit")
-        choice = input("Choose an option: ")
+customtkinter.set_appearance_mode('dark')
+customtkinter.set_default_color_theme('dark-blue')
+root = customtkinter.CTk()
+root.geometry("500x350")
 
-        if choice == '1':
-            #expense_name = input("Enter a name for the expense: ")
-            expense_name = "Gym2"
-            #amount = float(input("Enter the expense amount: "))
-            amount = 100
-            #category = input("Enter the expense category: ")
-            category = "Health"
-            #date = input("Enter the date of the expense (YYYY-MM-DD): ")
-            date = "2025-01-01"
+def login():
+    print("Login")
 
-            # Call the add_expense function
-            add_expense(expense_name, amount, category, date)
-            print(f"Expense of {amount} in category '{category}' added successfully.")
-        elif choice == '2':
-            print("Exiting the application.")
-            break
-        else:
-            print("Invalid choice. Please try again.")
+frame = customtkinter.CTkFrame(master=root)
+frame.pack(pady=20, padx=60, fill="both", expand=True)
 
-if __name__ == '__main__': # pragma: no cover
-    main()
+label = customtkinter.CTkLabel(master=frame, text="Personal Finance App", font=("Arial", 24))
+label.pack(pady=12, padx=10)
+
+entry1 = customtkinter.CTkEntry(master=frame, placeholder_text="Username", show='')
+entry1.pack(pady=12, padx=10)
+
+entry2 = customtkinter.CTkEntry(master=frame, placeholder_text="Password", show='*')
+entry2.pack(pady=12, padx=10)
+
+button = customtkinter.CTkButton(master=frame, text="Login", command=login)
+button.pack(pady=12, padx=10)
+
+checkbox = customtkinter.CTkCheckBox(master=frame, text="Remember me")
+checkbox.pack(pady=12, padx=10)
+
+root.mainloop()
