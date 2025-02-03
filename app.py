@@ -11,7 +11,7 @@ def login():
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
 
-label = customtkinter.CTkLabel(master=frame, text="Personal Finance App", font=("Arial", 24))
+label = customtkinter.CTkLabel(master=frame, text="Personal Finance App", font=("Roboto", 24))
 label.pack(pady=12, padx=10)
 
 entry1 = customtkinter.CTkEntry(master=frame, placeholder_text="Username", show='')
