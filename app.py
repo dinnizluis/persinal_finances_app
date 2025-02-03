@@ -5,7 +5,7 @@ customtkinter.set_default_color_theme('dark-blue')
 root = customtkinter.CTk()
 root.geometry("500x350")
 
-def login():
+def login(): # pragma: no cover
     print("Login")
 
 frame = customtkinter.CTkFrame(master=root)
@@ -26,4 +26,5 @@ button.pack(pady=12, padx=10)
 checkbox = customtkinter.CTkCheckBox(master=frame, text="Remember me")
 checkbox.pack(pady=12, padx=10)
 
-root.mainloop()
+if not os.getenv("CI"):  # Only run mainloop if not in CI/CD
+    root.mainloop()
